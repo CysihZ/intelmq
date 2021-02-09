@@ -50,6 +50,18 @@ except ImportError:
 
 
 class TwitterCollectorBot(CollectorBot):
+    "Collect tweets from given target timelines"
+    access_token_key: str = ""
+    access_token_secret: str = ""
+    consumer_key: str = ""
+    consumer_secret: str = ""
+    default_scheme: str = "http"
+    exclude_replies: bool = False
+    follow_urls: str = ""
+    include_rts: bool = True
+    target_timelines: str = ""
+    timelimit: str = ""
+    tweet_count: str = ""
 
     def init(self):
         if requests is None:
@@ -58,22 +70,22 @@ class TwitterCollectorBot(CollectorBot):
             raise MissingDependencyError("twitter")
         self.current_time_in_seconds = int(time.time())
         self.target_timelines = []
-        if getattr(self.parameters, "target_timelines", '') != '':
+        if getattr(self, "target_timelines", '') != '':
             self.target_timelines.extend(
-                self.parameters.target_timelines.split(','))
-        self.tweet_count = int(getattr(self.parameters, "tweet_count", 20))
+                self.target_timelines.split(','))
+        self.tweet_count = int(getattr(self, "tweet_count", 20))
         self.follow_urls = []
-        if getattr(self.parameters, "follow_urls", '') != '':
+        if getattr(self, "follow_urls", '') != '':
             self.follow_urls.extend(
-                self.parameters.follow_urls.split(','))
-        self.include_rts = getattr(self.parameters, "include_rts", False)
-        self.exclude_replies = getattr(self.parameters, "exclude_replies", False)
-        self.timelimit = int(getattr(self.parameters, "timelimit", 24 * 60 * 60))
+                self.follow_urls.split(','))
+        self.include_rts = getattr(self, "include_rts", False)
+        self.exclude_replies = getattr(self, "exclude_replies", False)
+        self.timelimit = int(getattr(self, "timelimit", 24 * 60 * 60))
         self.api = twitter.Api(
-            consumer_key=self.parameters.consumer_key,
-            consumer_secret=self.parameters.consumer_secret,
-            access_token_key=self.parameters.access_token_key,
-            access_token_secret=self.parameters.access_token_secret,
+            consumer_key=self.consumer_key,
+            consumer_secret=self.consumer_secret,
+            access_token_key=self.access_token_key,
+            access_token_secret=self.access_token_secret,
             tweet_mode="extended")
 
         self.set_request_parameters()

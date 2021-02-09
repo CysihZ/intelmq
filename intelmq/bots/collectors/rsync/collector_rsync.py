@@ -7,6 +7,12 @@ from intelmq.lib.bot import CollectorBot
 
 
 class RsyncCollectorBot(CollectorBot):
+    "Collect data with rsync from any resource rsync supports"
+    file: str = "<file>"
+    rate_limit: int = 1000
+    rsync_path: str = "<path>"
+    temp_directory: str = None  # TODO: should be pathlib.Path
+
     def init(self):
         self.rsync_data_directory = getattr(self, 'temp_directory',
                                             path.join(VAR_STATE_PATH, "rsync_collector"))

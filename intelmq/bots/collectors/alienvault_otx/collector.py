@@ -12,6 +12,11 @@ except ImportError:
 
 
 class AlienVaultOTXCollectorBot(CollectorBot):
+    "Collect reports from the AlienVault OTX Collector API. Report varies according to subscriptions."
+    api_key: str = "<insert your api key>"
+    interval: int = 24
+    modified_pulses_only: bool = False
+    rate_limit: int = 3600
 
     def init(self):
         if OTXv2 is None:

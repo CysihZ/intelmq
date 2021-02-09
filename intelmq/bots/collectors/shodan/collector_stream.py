@@ -9,6 +9,8 @@ The only possible selector is currently the country:
 """
 import pkg_resources
 
+from typing import List
+
 from intelmq.lib.bot import CollectorBot
 
 try:
@@ -18,6 +20,10 @@ except ImportError:
 
 
 class ShodanStreamCollectorBot(CollectorBot):
+    "Collect the Shodan stream from the Shodan API"
+    api_key: str = "<INSERT your API key>"
+    countries: List[str] = []
+
     def init(self):
         if shodan is None:
             raise ValueError("Library 'shodan' is needed but not installed.")
@@ -27,12 +33,12 @@ class ShodanStreamCollectorBot(CollectorBot):
             if self.proxy:
                 raise ValueError('Proxies are given but shodan-python > 1.8.1 is needed for proxy support.')
             else:
-                self.api = shodan.Shodan(self.parameters.api_key)
+                self.api = shodan.Shodan(self.api_key)
         else:
-            self.api = shodan.Shodan(self.parameters.api_key,
+            self.api = shodan.Shodan(self.api_key,
                                      proxies=self.proxy)
-        if isinstance(self.parameters.countries, str):
-            self.countries = self.parameters.countries.split(',')
+        if isinstance(self.countries, str):
+            self.countries = self.countries.split(',')
 
     def process(self):
         for line in self.api.stream.countries(timeout=self.http_timeout_sec, raw=True,

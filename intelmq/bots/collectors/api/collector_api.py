@@ -25,8 +25,12 @@ else:
 
 
 class APICollectorBot(CollectorBot):
-    collector_empty_process = True
-    is_multithreadable = False
+    """Collect data by exposing a HTTP API interface"""
+    name: str = "API"
+    port: int = 5000
+    provider: str = "APICollector"
+    collector_empty_process: bool = True
+    is_multithreadable: bool = False
 
     def init(self):
         if IOLoop is None:

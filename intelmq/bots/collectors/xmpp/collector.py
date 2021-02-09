@@ -27,6 +27,7 @@ xmpp_userlist: array
 xmpp_whitelist_mode: boolean
 """
 
+from typing import List
 
 from intelmq.lib.bot import CollectorBot
 from intelmq.lib.exceptions import MissingDependencyError
@@ -78,6 +79,19 @@ except ImportError:
 
 
 class XMPPCollectorBot(CollectorBot):
+    "Connect to an XMPP Server and a room, in order to receive reports from it. TLS is used by default. Bot can either pass on the body or the whole event"
+    ca_certs: str = "/etc/ssl/certs/ca-certificates.crt"  # TODO should be pathlib.Path
+    pass_full_xml: str = False
+    strip_message: bool = True
+    use_muc: bool = False
+    xmpp_password: str = "<xmpp password>"
+    xmpp_room: str = None
+    xmpp_room_nick: str = None
+    xmpp_room_password: str = None
+    xmpp_server: str = "<xmpp server>"
+    xmpp_user: str = "<xmpp username>"
+    xmpp_userlist: List[str] = None
+    xmpp_whitelist_mode: bool = False
 
     xmpp = None
     collector_empty_process = True
@@ -91,33 +105,33 @@ class XMPPCollectorBot(CollectorBot):
             raise MissingDependencyError("sleekxmpp")
 
         # Retrieve Parameters from configuration
-        xmpp_user = getattr(self.parameters, "xmpp_user", None)
-        xmpp_server = getattr(self.parameters, "xmpp_server", None)
-        xmpp_password = getattr(self.parameters, "xmpp_password", None)
+        xmpp_user = getattr(self, "xmpp_user", None)
+        xmpp_server = getattr(self, "xmpp_server", None)
+        xmpp_password = getattr(self, "xmpp_password", None)
 
         if None in (xmpp_user, xmpp_server, xmpp_password):
             raise ValueError('No User / Password provided.')
         else:
             xmpp_login = xmpp_user + '@' + xmpp_server
 
-        self.userlist = getattr(self.parameters, "xmpp_userlist", [])
+        self.userlist = getattr(self, "xmpp_userlist", [])
         # When configured in manager this is most likely a ,-separated string, we'd like an array
         if type(self.userlist) is str:
             self.userlist = [u.strip() for u in self.userlist.split(",")]
         elif self.userlist is None:  # if value is unset, set to empty list
             self.userlist = []
 
-        self.whitelist_mode = getattr(self.parameters, "xmpp_whitelist_mode", False)
+        self.whitelist_mode = getattr(self, "xmpp_whitelist_mode", False)
 
-        self.muc = getattr(self.parameters, "use_muc", None)
-        xmpp_room = getattr(self.parameters, "xmpp_room", None) if self.muc else None
-        xmpp_room_nick = getattr(self.parameters, "xmpp_room_nick", None) if self.muc else None
-        xmpp_room_password = getattr(self.parameters, "xmpp_room_password", None) if self.muc else None
+        self.muc = getattr(self, "use_muc", None)
+        xmpp_room = getattr(self, "xmpp_room", None) if self.muc else None
+        xmpp_room_nick = getattr(self, "xmpp_room_nick", None) if self.muc else None
+        xmpp_room_password = getattr(self, "xmpp_room_password", None) if self.muc else None
 
-        self.pass_full_xml = getattr(self.parameters, "pass_full_xml", None)
-        self.strip_message = getattr(self.parameters, "strip_message", None)
+        self.pass_full_xml = getattr(self, "pass_full_xml", None)
+        self.strip_message = getattr(self, "strip_message", None)
 
-        ca_certs = getattr(self.parameters, "ca_certs", None)
+        ca_certs = getattr(self, "ca_certs", None)
 
         if self.muc and not xmpp_room:
             raise ValueError('No room provided.')

@@ -28,6 +28,13 @@ from intelmq.lib.splitreports import generate_reports
 
 
 class FileCollectorBot(CollectorBot):
+    """Fetch data from the file system"""
+    chunk_replicate_header: bool = True
+    chunk_size: int = None
+    delete_file: bool = False
+    path: str = "/tmp/"  # TODO pathlib.Path
+    postfix: str = ".csv"
+    rate_limit: int = 300
 
     def init(self):
         # Test if path is a directory

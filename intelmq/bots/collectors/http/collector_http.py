@@ -52,6 +52,19 @@ class Time(object):
 
 
 class HTTPCollectorBot(CollectorBot):
+    """Fetch reports from an URL"""
+    extract_files: bool = False
+    gpg_keyring: str = None  # TODO: pathlib.Path
+    http_password: str = None
+    http_url: str = "<insert url of feed>"
+    http_url_formatting: bool = False
+    http_username: str = None
+    rate_limit: int = 3600
+    signature_url: str = None
+    signature_url_formatting: bool = False
+    ssl_client_certificate: str = None  # TODO: pathlib.Path
+    verify_pgp_signatures: str = False
+
     def init(self):
         if requests is None:
             raise MissingDependencyError("requests")

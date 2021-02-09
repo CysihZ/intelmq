@@ -20,6 +20,26 @@ except ImportError:
 
 
 class RTCollectorBot(CollectorBot):
+    "Fetches attachments and URLs from an Request Tracker ticketing server"
+    attachment_regex: str = "\\.csv\\.zip$"  # TODO: type could be re?
+    extract_attachment: bool = True
+    extract_download: bool = True
+    http_password: str = None
+    http_username: str = None
+    password: str = "password"
+    rate_limit: int = 3600
+    search_not_older_than: str = None  # TODO: type could be something time,
+    search_owner: str = "nobody"
+    search_queue: str = "Incident Reports"
+    search_requestor: str = None  # TODO: type could be list[emailaddresstype]
+    search_status: str = "new"
+    search_subject_like: str = "Report"
+    set_status: str = "open"
+    ssl_client_certificate: str = None  # TODO: type should be pathlib.Path
+    take_ticket: bool = True
+    uri: str = "http://localhost/rt/REST/1.0"
+    url_regex: str = "https://dl.shadowserver.org/[a-zA-Z0-9?_-]*"  # TODO: type could be re?
+    user: str = "intelmq"
 
     parameter_mapping = {'search_owner': 'Owner',
                          'search_queue': 'Queue',
@@ -34,13 +54,13 @@ class RTCollectorBot(CollectorBot):
         if rt is None:
             raise MissingDependencyError("rt")
 
-        if getattr(self.parameters, 'search_not_older_than', None):
+        if getattr(self, 'search_not_older_than', None):
             try:
-                self.not_older_than = parser.parse(self.parameters.search_not_older_than)
+                self.not_older_than = parser.parse(self.search_not_older_than)
                 self.not_older_than_type = 'absolute'
             except ValueError:
                 try:
-                    self.not_older_than_relative = timedelta(minutes=parse_relative(self.parameters.search_not_older_than))
+                    self.not_older_than_relative = timedelta(minutes=parse_relative(self.search_not_older_than))
                 except ValueError:
                     self.logger.error("Parameter 'search_not_older_than' could not be parsed. "
                                       "Check your configuration.")
